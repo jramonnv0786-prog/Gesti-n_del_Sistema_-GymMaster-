@@ -90,3 +90,70 @@ graph LR
     GR -. "6.1 [si está llena] informarError()" .-> IW
 
 ```
+Ejercicio 4.
+```mermaid
+
+stateDiagram-v2
+    [*] --> RecibirSolicitud: Inicio del Proceso
+    
+    state "Recibir solicitud de reserva" as RecibirSolicitud
+    state "Validar pago de cuota" as ValidarPago
+    state "Comprobar aforo disponible" as ComprobarAforo
+    state "Bloquear plaza en BD" as BloquearPlaza
+    state "Enviar email de confirmación" as EnviarEmail
+    state "Notificar error de pago" as ErrorPago
+    state "Notificar falta de aforo" as ErrorAforo
+
+    RecibirSolicitud --> ValidarPago
+    
+    state socio_pagado <<choice>>
+    ValidarPago --> socio_pagado
+    socio_pagado --> ComprobarAforo : [Cuota al día]
+    socio_pagado --> ErrorPago : [Deuda pendiente]
+    
+    state hay_aforo <<choice>>
+    ComprobarAforo --> hay_aforo
+    hay_aforo --> BloquearPlaza : [Hay hueco]
+    hay_aforo --> ErrorAforo : [Clase llena]
+    
+    BloquearPlaza --> EnviarEmail
+    EnviarEmail --> [*]: Reserva Exitosa
+    
+    ErrorPago --> [*]: Proceso Abortado
+    ErrorAforo --> [*]: Proceso Abortado
+
+```
+
+Ejercicio 5.
+
+```mermaid
+
+stateDiagram-v2
+    [*] --> Pendiente : crearReserva()
+    
+    Pendiente --> Confirmada : confirmarPago() / verificarCupo()
+    Pendiente --> Cancelada : cancelar()
+    
+    Confirmada --> Cancelada : cancelar() / liberarPlaza()
+    
+    state "Asistencia" as Asistencia {
+        Confirmada --> Realizada : hacerCheckIn()
+        Confirmada --> NoPresentado : finClase() [sin asistencia]
+    }
+
+    Realizada --> [*]
+    NoPresentado --> [*]
+    Cancelada --> [*]
+
+    note right of Pendiente
+        Estado inicial tras 
+        solicitud del socio.
+    end note
+
+    note left of NoPresentado
+        Se dispara si el socio 
+        no marca asistencia 
+        al inicio de la sesión.
+    end note
+
+```
