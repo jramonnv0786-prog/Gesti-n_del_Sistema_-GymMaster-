@@ -1,34 +1,36 @@
 # Gesti-n_del_Sistema_-GymMaster-
-El gimnasio "GymMaster" quiere digitalizar un proceso crítico: La gestión de Clases Colectivas con reserva previa. Como analista de software, debes entregar la documentación técnica de este módulo utilizando UML.
+
+El gimnasio "GymMaster" quiere digitalizar un proceso crítico: La gestión de Clases Colectivas con reserva previa. 
+Como analista de software, debes entregar la documentación técnica de este módulo utilizando UML.
 
 Ejercicio 1.
 
 ```mermaid
-useCaseDiagram
-    actor "Socio" as S
-    actor "Administrador" as A
 
-    package "Sistema de Gestión de Gimnasio" {
-        usecase "Identificarse (Login)" as UC_Login
-        usecase "Reservar Clase" as UC_Reservar
-        usecase "Apuntarse en Lista de Espera" as UC_Espera
-        usecase "Dar de alta nuevas clases" as UC_Alta
-        usecase "Cancelar sesiones" as UC_Cancelar
-    }
+graph TD
+    subgraph "Sistema de Gestión de Gimnasio"
+        UC_Login(["Identificarse (Login)"])
+        UC_Reservar(["Reservar Clase"])
+        UC_Espera(["Apuntarse en Lista de Espera"])
+        UC_Alta(["Dar de alta nuevas clases"])
+        UC_Cancelar(["Cancelar sesiones"])
+    end
 
-    %% Relaciones del Socio
-    S --> UC_Reservar
-    
-    %% Relaciones del Administrador
-    A --> UC_Alta
-    A --> UC_Cancelar
+    %% Actores
+    Socio((Socio))
+    Admin((Administrador))
 
-    %% Relaciones Include (Obligatorias)
-    UC_Reservar ..> UC_Login : <<include>>
-    UC_Alta ..> UC_Login : <<include>>
-    UC_Cancelar ..> UC_Login : <<include>>
+    %% Conexiones de Actores
+    Socio --- UC_Reservar
+    Admin --- UC_Alta
+    Admin --- UC_Cancelar
 
-    %% Relación Extend (Opcional bajo condición)
-    UC_Espera ..> UC_Reservar : <<extend>>
+    %% Relaciones Include (Flecha discontinua hacia el incluido)
+    UC_Reservar -.->|"<<include>>"| UC_Login
+    UC_Alta -.->|"<<include>>"| UC_Login
+    UC_Cancelar -.->|"<<include>>"| UC_Login
+
+    %% Relación Extend (Flecha discontinua desde la extensión al base)
+    UC_Espera -.->|"<<extend>>"| UC_Reservar
 
 ```
